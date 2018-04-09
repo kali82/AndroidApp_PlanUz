@@ -176,8 +176,9 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
     public void onFacultiesSelected(Faculties faculties) {
 
         switch (faculties.getname()){
-            case "Wydział Artystyczny":
-                Intent intent = new Intent(getApplicationContext(), ArtystycznyActivity.class);
+            case "Wydział Lekarski i Nauk o Zdrowiu":
+                Intent intent = new Intent(getApplicationContext(), LekarskiActivity.class);
+                intent.putExtra("name", "Wydział Lekarski i Nauk o Zdrowiu");
                 startActivity(intent);
 
             case "Wydział Informatyki, Elektrotechniki i Automatyki":

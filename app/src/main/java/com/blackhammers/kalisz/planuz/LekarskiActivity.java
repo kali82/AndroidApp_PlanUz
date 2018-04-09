@@ -2,12 +2,14 @@ package com.blackhammers.kalisz.planuz;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.TextView;
 
-public class ArtystycznyActivity extends AppCompatActivity {
+public class LekarskiActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_artystyczny);
+        setContentView(R.layout.activity_lekarski);
     }
 }

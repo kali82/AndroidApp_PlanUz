@@ -5,14 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context="com.blackhammers.kalisz.planuz.InformatykiActivity">
+    tools:context="com.blackhammers.kalisz.planuz.LekarskiActivity">
 
     <TextView
+        android:id="@+id/nameId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
         android:textStyle="bold"
-        android:text="Wydział Informatyki, Elektrotechniki i Automatyki" />
+        android:textSize="25sp"
+        android:gravity="center"
+        android:text="Wydział Lekarski i Nauk o Zdrowiu" />
 
 </RelativeLayout>
