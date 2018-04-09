@@ -6,6 +6,7 @@ package com.blackhammers.kalisz.planuz;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,27 +20,21 @@ import java.util.Comparator;
 import java.util.List;
 
 
-public class FacultiesAdapter extends RecyclerView.Adapter<FacultiesAdapter.SingleFacultiesRowHolder> implements Filterable {
+public class FacultiesAdapter extends RecyclerView.Adapter<FacultiesAdapter.SingleFacultiesRowHolder> implements Filterable, onFacultiesAdapterListener {
 
-    Context context;
-    List<Faculties> facultiesList;
-    List<Faculties> filterList;
-    onFacultiesAdapterListener listener;
+    private Context context;
+    private List<Faculties> facultiesList;
+    private List<Faculties> filterList;
+    private onFacultiesAdapterListener listener;
 
-    public FacultiesAdapter(Context context, List<Faculties> facultiesList, onFacultiesAdapterListener listener) {
+    @Override
+    public void onFacultiesSelected(Faculties faculties) {
 
-
-        this.context = context;
-        this.listener = listener;
-        this.facultiesList = facultiesList;
-        this.filterList = facultiesList;
     }
 
-
     public class SingleFacultiesRowHolder extends RecyclerView.ViewHolder {
+
         TextView name, address;
-
-
 
         public SingleFacultiesRowHolder(View itemView, List<Faculties> list) {
             super(itemView);
@@ -57,6 +52,16 @@ public class FacultiesAdapter extends RecyclerView.Adapter<FacultiesAdapter.Sing
 
         }
     }
+
+    public FacultiesAdapter(Context context, List<Faculties> facultiesList, onFacultiesAdapterListener listener) {
+
+
+        this.context = context;
+        this.listener = listener;
+        this.facultiesList = facultiesList;
+        this.filterList = facultiesList;
+    }
+
 
     @Override
     public SingleFacultiesRowHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -88,8 +93,10 @@ public class FacultiesAdapter extends RecyclerView.Adapter<FacultiesAdapter.Sing
 
     @Override
     public int getItemCount() {
-        return filterList.size();
-    }
+        return filterList == null ? 0 : filterList.size();
+        }
+        //return filterList.size();
+
 
 
     @Override
@@ -103,7 +110,7 @@ public class FacultiesAdapter extends RecyclerView.Adapter<FacultiesAdapter.Sing
                 } else {
                     List<Faculties> filteredList = new ArrayList<>();
                     for (Faculties faculties : facultiesList) {
-                        if (faculties.getname() != null && faculties.getdesc() != null && faculties.getname().toLowerCase().contains(searchText.toLowerCase())|| faculties.getdesc().toLowerCase().contains(searchText.toLowerCase())) {
+                        if (faculties.name.toLowerCase().contains(searchText.toLowerCase())|| faculties.getname().toLowerCase().contains(searchText.toLowerCase())) {
                             filteredList.add(faculties);
                         }
                     }

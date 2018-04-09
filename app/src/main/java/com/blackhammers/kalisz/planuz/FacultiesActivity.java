@@ -72,8 +72,8 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                adapter.getFilter().filter(query);
+            public boolean onQueryTextSubmit(String newText) {
+                adapter.getFilter().filter(newText);
                 return false;
             }
 
