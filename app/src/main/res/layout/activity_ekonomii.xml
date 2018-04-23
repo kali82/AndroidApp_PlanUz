@@ -4,16 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
-    tools:context="com.blackhammers.kalisz.planuz.InformatykiActivity">
+    tools:context="com.blackhammers.kalisz.planuz.EkonomiiActivity">
 
     <TextView
-        android:id="@+id/textId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Wydzial ekonomii"
+        android:textSize="35sp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-        android:textStyle="bold"
-        android:text="name" />
+        android:layout_marginTop="20dp"
+        android:textStyle="bold"/>
 
 </RelativeLayout>

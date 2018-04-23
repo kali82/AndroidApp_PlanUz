@@ -6,7 +6,6 @@ package com.blackhammers.kalisz.planuz;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,7 +85,7 @@ public class FacultiesAdapter extends RecyclerView.Adapter<FacultiesAdapter.Sing
         //holder.setIsRecyclable(false);
 
         holder.name.setText(faculties.getname());
-        holder.address.setText(faculties.getdesc());
+        holder.address.setText(faculties.getaddress());
         //Glide  for images
     }
 

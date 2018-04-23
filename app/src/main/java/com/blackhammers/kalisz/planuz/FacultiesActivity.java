@@ -177,16 +177,24 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
 
         switch (faculties.getname()){
             case "Wydział Lekarski i Nauk o Zdrowiu":
-                Intent intent = new Intent(getApplicationContext(), LekarskiActivity.class);
-                intent.putExtra("name", "Wydział Lekarski i Nauk o Zdrowiu");
+                Intent intent = new Intent(getApplicationContext(), InformatykiActivity.class);
+                intent.putExtra("Lekname", faculties.getname() );
                 startActivity(intent);
+                break;
 
             case "Wydział Informatyki, Elektrotechniki i Automatyki":
                 Intent intent2 = new Intent(getApplicationContext(), InformatykiActivity.class);
+                intent2.putExtra("Infname", faculties.getname() );
                 startActivity(intent2);
+                break;
+            case "Wydział Ekonomii i Zarządzania":
+                Intent intent3 = new Intent(getApplicationContext(), InformatykiActivity.class);
+                intent3.putExtra("Ekoname", faculties.getname() );
+                startActivity(intent3);
+                break;
         }
 
-        //Toast.makeText(getApplicationContext(), "Selected: " + faculties.getname() + ", " + faculties.getdesc(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), "Selected: " + faculties.getname() + ", " + faculties.getaddress(), Toast.LENGTH_LONG).show();
 
     }
 

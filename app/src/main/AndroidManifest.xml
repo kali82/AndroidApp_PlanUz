@@ -31,7 +31,8 @@
         <activity android:name=".EventsActivity" />
         <activity android:name=".MapsActivity" />
         <activity android:name=".InformatykiActivity" />
-        <activity android:name=".LekarskiActivity"></activity>
+        <activity android:name=".LekarskiActivity" />
+        <activity android:name=".EkonomiiActivity"></activity>
     </application>
 
 </manifest>

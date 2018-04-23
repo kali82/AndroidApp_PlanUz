@@ -23,7 +23,7 @@ public class Faculties {
         this.name = name;
     }
 
-    public String getdesc() {
+    public String getaddress() {
         return address;
     }
 
