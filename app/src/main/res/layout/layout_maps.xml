@@ -5,8 +5,8 @@
     android:layout_height="?attr/actionBarSize"
     android:background="@color/colorPrimary"
     android:id="@+id/toolbar_id"
-    app:title="Plan UZ"
     app:titleTextColor="#FFFFFF"
+    app:title="Mapy"
     >
 
 </android.support.v7.widget.Toolbar>

@@ -57,7 +57,7 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
 
         firebaseDatabase = FirebaseDatabase.getInstance();
 
-        getDataFromDatabase();
+        getFacultiesFromDatabase();
 
         adapter.notifyDataSetChanged();
 
@@ -100,10 +100,10 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
 
 
 
-    public void getDataFromDatabase() {
+    public void getFacultiesFromDatabase() {
 
 
-        databaseReference = firebaseDatabase.getReference().child("Wydzialy");
+        databaseReference = firebaseDatabase.getReference().child("data");
         databaseReference.keepSynced(true);
 
         databaseReference.addChildEventListener(new ChildEventListener() {
@@ -175,24 +175,29 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
     @Override
     public void onFacultiesSelected(Faculties faculties) {
 
-        switch (faculties.getname()){
-            case "Wydział Lekarski i Nauk o Zdrowiu":
-                Intent intent = new Intent(getApplicationContext(), InformatykiActivity.class);
-                intent.putExtra("Lekname", faculties.getname() );
-                startActivity(intent);
-                break;
 
-            case "Wydział Informatyki, Elektrotechniki i Automatyki":
-                Intent intent2 = new Intent(getApplicationContext(), InformatykiActivity.class);
-                intent2.putExtra("Infname", faculties.getname() );
-                startActivity(intent2);
-                break;
-            case "Wydział Ekonomii i Zarządzania":
-                Intent intent3 = new Intent(getApplicationContext(), InformatykiActivity.class);
-                intent3.putExtra("Ekoname", faculties.getname() );
-                startActivity(intent3);
-                break;
-        }
+        Intent intent = new Intent(getApplicationContext(), CoursesActivity.class);
+        intent.putExtra("id", faculties.getId());
+        startActivity(intent);
+
+//        switch (faculties.getname()){
+//            case "Wydział Lekarski i Nauk o Zdrowiu":
+//                Intent intent = new Intent(getApplicationContext(), GroupsActivity.class);
+//                intent.putExtra("Lekname",  faculties.getname() );
+//                startActivity(intent);
+//                break;
+//
+//            case "Wydział Informatyki, Elektrotechniki i Automatyki":
+//                Intent intent2 = new Intent(getApplicationContext(), GroupsActivity.class);
+//                intent2.putExtra("Infname", faculties.getname() );
+//                startActivity(intent2);
+//                break;
+//            case "Wydział Ekonomii i Zarządzania":
+//                Intent intent3 = new Intent(getApplicationContext(), GroupsActivity.class);
+//                intent3.putExtra("Ekoname", faculties.getname() );
+//                startActivity(intent3);
+//                break;
+//        }
 
         //Toast.makeText(getApplicationContext(), "Selected: " + faculties.getname() + ", " + faculties.getaddress(), Toast.LENGTH_LONG).show();
 
