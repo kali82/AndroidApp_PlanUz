@@ -24,6 +24,7 @@ public class CoursesAdapter extends RecyclerView.Adapter<CoursesAdapter.SingleCo
     private List<Courses> filterList;
     private onCoursesAdapterListener listener;
 
+
     @Override
     public void onCoursesSelectedListener(Courses courses) {
 

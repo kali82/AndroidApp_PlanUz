@@ -10,8 +10,10 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -40,6 +42,13 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar_id);
         setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(FacultiesActivity.this,MainMenuActivity.class);
+                startActivity(intent);
+            }
+        });
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewID);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -47,6 +56,7 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), LinearLayoutManager.VERTICAL));
         Context context;
+//        getSupportActionBar().setIcon(R.drawable.classicon);
 
         facultiesList = new ArrayList<>();
         keys = new ArrayList<>();
@@ -54,20 +64,21 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
         adapter = new FacultiesAdapter( this, facultiesList, this);
         recyclerView.setAdapter(adapter);
 
-
         firebaseDatabase = FirebaseDatabase.getInstance();
 
         getFacultiesFromDatabase();
 
         adapter.notifyDataSetChanged();
 
+
     }
+
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        getMenuInflater().inflate(R.menu.menu_items, menu);
+        getMenuInflater().inflate(R.menu.search_faculties, menu);
         MenuItem menuItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -114,9 +125,6 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
 
                 facultiesList.add(faculties);
 
-                String key = dataSnapshot.getKey();
-                keys.add(key);
-
                 //add arraylist to adapter/recyclerView
 
                 adapter.notifyDataSetChanged();
@@ -143,7 +151,6 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-                //Faculties model = dataSnapshot.getValue(Faculties.class);
                 String key = dataSnapshot.getKey();
 
                 int index = keys.indexOf(key);
@@ -175,31 +182,9 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
     @Override
     public void onFacultiesSelected(Faculties faculties) {
 
-
         Intent intent = new Intent(getApplicationContext(), CoursesActivity.class);
-        intent.putExtra("id", faculties.getId());
+        intent.putExtra("facultiesId", faculties.getId());
         startActivity(intent);
-
-//        switch (faculties.getname()){
-//            case "Wydział Lekarski i Nauk o Zdrowiu":
-//                Intent intent = new Intent(getApplicationContext(), GroupsActivity.class);
-//                intent.putExtra("Lekname",  faculties.getname() );
-//                startActivity(intent);
-//                break;
-//
-//            case "Wydział Informatyki, Elektrotechniki i Automatyki":
-//                Intent intent2 = new Intent(getApplicationContext(), GroupsActivity.class);
-//                intent2.putExtra("Infname", faculties.getname() );
-//                startActivity(intent2);
-//                break;
-//            case "Wydział Ekonomii i Zarządzania":
-//                Intent intent3 = new Intent(getApplicationContext(), GroupsActivity.class);
-//                intent3.putExtra("Ekoname", faculties.getname() );
-//                startActivity(intent3);
-//                break;
-//        }
-
-        //Toast.makeText(getApplicationContext(), "Selected: " + faculties.getname() + ", " + faculties.getaddress(), Toast.LENGTH_LONG).show();
 
     }
 

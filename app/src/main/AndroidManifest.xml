@@ -32,7 +32,12 @@
         <activity android:name=".MapsActivity" />
         <activity android:name=".CoursesActivity" />
         <activity android:name=".GroupsActivity" />
-        <activity android:name=".MainMenuActivity"></activity>
+        <activity android:name=".MainMenuActivity" />
+        <activity
+            android:name=".SubjectsActivity"
+            android:label="@string/title_activity_subjects"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".CalendarActivity" />
     </application>
 
 </manifest>

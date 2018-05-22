@@ -1,13 +1,17 @@
 package com.blackhammers.kalisz.planuz;
 
 import android.content.Intent;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.google.firebase.database.ChildEventListener;
@@ -35,9 +39,11 @@ public class GroupsActivity extends AppCompatActivity implements onGroupsAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups);
         Intent intent = getIntent();
-        int id = intent.getIntExtra("id", 0);
+        int coursesId = intent.getIntExtra("coursesId", 0);
 
+        int facultiesId = intent.getIntExtra("facultiesId", 0);
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar_id);
+        setSupportActionBar(toolbar);
         recyclerView = findViewById(R.id.groupsRecyclerID);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -54,7 +60,7 @@ public class GroupsActivity extends AppCompatActivity implements onGroupsAdapter
         recyclerView.setAdapter(adapter);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
-        getGroupsFromFirebase(id);
+        getGroupsFromDatabase(facultiesId,coursesId);
         adapter.notifyDataSetChanged();
 
 
@@ -70,89 +76,120 @@ public class GroupsActivity extends AppCompatActivity implements onGroupsAdapter
 //        textView.setText(text);
     }
 
-    public void getGroupsFromFirebase(Integer key){
-        databaseReference = firebaseDatabase.getReference().child("data/"+key+"/courses/"+key+"/groups");
-        databaseReference.keepSynced(true);
-//
-//        databaseReference.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//                Groups groups = dataSnapshot.getValue(Groups.class);
-//                groupsList.add(groups);
-//
-//                adapter.notifyDataSetChanged();
-//
-//                recyclerView.setAdapter(adapter);
-//            }
-//
-//            @Override
-//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-//
-//                Groups groups = dataSnapshot.getValue(Groups.class);
-//                String key = dataSnapshot.getKey();
-//
-//                int index = keys.indexOf(key);
-//
-//                groupsList.set(index, groups);
-//
-//                adapter.notifyDataSetChanged();
-//                recyclerView.setAdapter(adapter);
-//
-//            }
-//
-//            @Override
-//            public void onChildRemoved(DataSnapshot dataSnapshot) {
-//
-//                String key = dataSnapshot.getKey();
-//
-//                int index = keys.indexOf(key);
-//
-//                groupsList.remove(index);
-//
-//                adapter.notifyDataSetChanged();
-//
-//                recyclerView.setAdapter(adapter);
-//
-//            }
-//
-//            @Override
-//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//        adapter.notifyDataSetChanged();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
 
-        ValueEventListener valueEventListener = new ValueEventListener() {
+        getMenuInflater().inflate(R.menu.search_groups, menu);
+        MenuItem menuItem = menu.findItem(R.id.groups_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    for(DataSnapshot snap : ds.getChildren()){
-//                    for(DataSnapshot templateSnapshot : dataSnapshot.getChildren()){
-//                        for(DataSnapshot snap : templateSnapshot.getChildren())
-                    if(dataSnapshot.exists()){
-                        Groups groups = ds.getValue(Groups.class);
-                        groupsList.add(groups);
-                        recyclerView.setAdapter(adapter);
-                        Log.d("Courses name ", groups.getName());
-                    }
-                }
-                }
+            public boolean onQueryTextSubmit(String newText) {
+                adapter.getFilter().filter(newText);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if(id == R.id.groups_search){
+            return  true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void getGroupsFromDatabase(Integer facultiesKey, Integer coursesKey){
+        databaseReference = firebaseDatabase.getReference().child("data/"+facultiesKey+"/courses/"+coursesKey+"/groups");
+        databaseReference.keepSynced(true);
+
+        databaseReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    Groups groups = dataSnapshot.getValue(Groups.class);
+                    groupsList.add(groups);
+
+                    adapter.notifyDataSetChanged();
+                    recyclerView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                Groups groups = dataSnapshot.getValue(Groups.class);
+                String key = dataSnapshot.getKey();
+
+                int index = keys.indexOf(key);
+
+                groupsList.set(index, groups);
+
+                adapter.notifyDataSetChanged();
+                recyclerView.setAdapter(adapter);
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                String key = dataSnapshot.getKey();
+
+                int index = keys.indexOf(key);
+
+                groupsList.remove(index);
+
+                adapter.notifyDataSetChanged();
+
+                recyclerView.setAdapter(adapter);
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        };
-        databaseReference.addValueEventListener(valueEventListener);
+        });
         adapter.notifyDataSetChanged();
-//        databaseReference = firebaseDatabase.getReference().child("data");
-        databaseReference.addListenerForSingleValueEvent(valueEventListener);
+
+//        databaseReference = firebaseDatabase.getReference().child("data/"+key+"/courses/"+key+"/courses");
+//        ValueEventListener valueEventListener = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for(DataSnapshot ds : dataSnapshot.getChildren()){
+//                    for(DataSnapshot snap : ds.getChildren()){
+//                    if(ds.exists()){
+//                        Groups groups = snap.getValue(Groups.class);
+//                        groupsList.add(groups);
+//                        recyclerView.setAdapter(adapter);
+//                        //Log.d("Courses name ", groups.getName());
+//                    }
+//                }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        };
+//        databaseReference.addValueEventListener(valueEventListener);
+//        adapter.notifyDataSetChanged();
+//      //databaseReference = firebaseDatabase.getReference().child("data");
+//        databaseReference.addListenerForSingleValueEvent(valueEventListener);
     }
 
 
@@ -160,7 +197,8 @@ public class GroupsActivity extends AppCompatActivity implements onGroupsAdapter
 
     @Override
     public void onGroupsSelectedListener(Groups groups) {
-
+        Intent intent = new Intent(getApplicationContext(), SubjectsActivity.class);
+        startActivity(intent);
     }
 }
 

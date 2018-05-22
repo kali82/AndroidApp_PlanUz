@@ -6,6 +6,7 @@
     android:background="@color/colorPrimary"
     android:id="@+id/toolbar_id"
     app:title="Plan UZ"
+    app:navigationIcon="@mipmap/app_icon"
     app:titleTextColor="#FFFFFF"
     >
 
