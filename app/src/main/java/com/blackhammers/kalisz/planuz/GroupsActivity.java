@@ -198,6 +198,11 @@ public class GroupsActivity extends AppCompatActivity implements onGroupsAdapter
     @Override
     public void onGroupsSelectedListener(Groups groups) {
         Intent intent = new Intent(getApplicationContext(), SubjectsActivity.class);
+        int coursesId = intent.getIntExtra("coursesId", 0);
+        int facultiesId = intent.getIntExtra("facultiesId", 0);
+        intent.putExtra("facultiesId", facultiesId );
+        intent.putExtra("coursesId", coursesId);
+        intent.putExtra("groupsId", groups.getId());
         startActivity(intent);
     }
 }
