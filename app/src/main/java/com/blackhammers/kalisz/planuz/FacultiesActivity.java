@@ -43,8 +43,8 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar_id);
         setSupportActionBar(toolbar);
-    getSupportActionBar().setDisplayShowHomeEnabled(true);
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//    getSupportActionBar().setDisplayShowHomeEnabled(true);
+//    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Wydziały");
 
 
@@ -128,7 +128,7 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
     public void getFacultiesFromDatabase() {
 
 
-        databaseReference = firebaseDatabase.getReference().child("script-scraped");
+        databaseReference = firebaseDatabase.getReference().child("data");
         databaseReference.keepSynced(true);
 
         databaseReference.addChildEventListener(new ChildEventListener() {
