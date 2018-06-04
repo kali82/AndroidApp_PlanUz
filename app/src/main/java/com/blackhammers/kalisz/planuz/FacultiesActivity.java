@@ -40,15 +40,15 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
         setContentView(R.layout.activity_faculties);
 
 
+
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar_id);
         setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(FacultiesActivity.this,MainMenuActivity.class);
-                startActivity(intent);
-            }
-        });
+    getSupportActionBar().setDisplayShowHomeEnabled(true);
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Wydziały");
+
+
+
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewID);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -66,6 +66,7 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
 
         firebaseDatabase = FirebaseDatabase.getInstance();
 
+
         getFacultiesFromDatabase();
 
         adapter.notifyDataSetChanged();
@@ -81,6 +82,7 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
         getMenuInflater().inflate(R.menu.search_faculties, menu);
         MenuItem menuItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+        searchView.setQueryHint("Wyszukaj wydziału");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String newText) {
@@ -100,12 +102,24 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        int id = item.getItemId();
 
-        if(id == R.id.action_search){
-            return  true;
+        switch (item.getItemId()) {
+
+            case R.id.action_search:
+                return  true;
+
+            case android.R.id.home:
+                // todo: goto back activity from here
+
+                Intent intent = new Intent(FacultiesActivity.this, MainMenuActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
 
@@ -114,7 +128,7 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
     public void getFacultiesFromDatabase() {
 
 
-        databaseReference = firebaseDatabase.getReference().child("data");
+        databaseReference = firebaseDatabase.getReference().child("script-scraped");
         databaseReference.keepSynced(true);
 
         databaseReference.addChildEventListener(new ChildEventListener() {

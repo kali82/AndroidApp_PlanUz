@@ -12,17 +12,18 @@ import java.util.List;
  * Created by kalis on 2018-05-25.
  */
 
-public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHolder> {
+public class SubjectsListAdapter extends RecyclerView.Adapter<SubjectsListAdapter.ViewHolder> {
 
     List<Subjects> subjectsList;
 
-    public UserListAdapter(List<Subjects> subjectsList) {
+
+    public SubjectsListAdapter(List<Subjects> subjectsList) {
         this.subjectsList = subjectsList;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user,null));
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.subjects_content,null));
     }
 
     @Override
@@ -43,7 +44,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
 
         public ViewHolder(View itemView) {
             super(itemView);
-            name = itemView.findViewById(R.id.show_user_email);
+            name = itemView.findViewById(R.id.subject_name_Id);
         }
         public void bindView(Subjects subjects) {
             name.setText(subjects.getName());

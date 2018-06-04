@@ -64,6 +64,8 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.SingleGrou
             public int compare(Groups o1, Groups o2) {
                 return o1.name.compareTo(o2.name);
             }
+
+
         });
         return singleGroupsRowHolder;
     }

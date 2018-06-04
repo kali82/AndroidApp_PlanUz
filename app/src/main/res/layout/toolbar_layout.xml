@@ -5,9 +5,9 @@
     android:layout_height="?attr/actionBarSize"
     android:background="@color/colorPrimary"
     android:id="@+id/toolbar_id"
-    app:title="Plan UZ"
-    app:navigationIcon="@mipmap/app_icon"
-    app:titleTextColor="#FFFFFF"
-    >
+    app:titleTextColor="#FFFFFF">
+    <!--app:navigationIcon="@mipmap/app_icon"-->
+
+
 
 </android.support.v7.widget.Toolbar>

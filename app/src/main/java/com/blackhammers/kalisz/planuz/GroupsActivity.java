@@ -39,11 +39,12 @@ public class GroupsActivity extends AppCompatActivity implements onGroupsAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups);
         Intent intent = getIntent();
-        int coursesId = intent.getIntExtra("coursesId", 0);
+        int coursesId = intent.getIntExtra("coursesId", 2);
 
         int facultiesId = intent.getIntExtra("facultiesId", 0);
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar_id);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Grupy");
         recyclerView = findViewById(R.id.groupsRecyclerID);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -82,6 +83,7 @@ public class GroupsActivity extends AppCompatActivity implements onGroupsAdapter
         getMenuInflater().inflate(R.menu.search_groups, menu);
         MenuItem menuItem = menu.findItem(R.id.groups_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+        searchView.setQueryHint("Wyszukaj grupę");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String newText) {
@@ -110,7 +112,7 @@ public class GroupsActivity extends AppCompatActivity implements onGroupsAdapter
     }
 
     public void getGroupsFromDatabase(Integer facultiesKey, Integer coursesKey){
-        databaseReference = firebaseDatabase.getReference().child("data/"+facultiesKey+"/courses/"+coursesKey+"/groups");
+        databaseReference = firebaseDatabase.getReference().child("script-scraped/"+facultiesKey+"/courses/"+coursesKey+"/groups");
         databaseReference.keepSynced(true);
 
         databaseReference.addChildEventListener(new ChildEventListener() {
@@ -203,6 +205,11 @@ public class GroupsActivity extends AppCompatActivity implements onGroupsAdapter
         intent.putExtra("facultiesId", facultiesId );
         intent.putExtra("coursesId", coursesId);
         intent.putExtra("groupsId", groups.getId());
+//        Bundle bundle = new Bundle();
+//        bundle.putInt("facultiesId", facultiesId);
+//        bundle.putInt("coursesId", coursesId);
+//        bundle.putInt("groupsId", groups.getId());
+//        intent.putExtras(bundle);
         startActivity(intent);
     }
 }

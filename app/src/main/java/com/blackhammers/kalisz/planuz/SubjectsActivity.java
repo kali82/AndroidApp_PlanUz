@@ -1,5 +1,6 @@
 package com.blackhammers.kalisz.planuz;
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -7,12 +8,15 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -20,10 +24,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class SubjectsActivity extends AppCompatActivity {
+public class SubjectsActivity extends AppCompatActivity implements onSubjectsAdapterListener {
 
     TabLayout tabLayout;
     ViewPager viewPager;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
+    List<Subjects> subjectsList;
+    SubjectsListAdapter adapter;
+    RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,16 +40,37 @@ public class SubjectsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_subjcets);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_id);
         setSupportActionBar(toolbar);
-        defineView();
-        bindView();
+        getSupportActionBar().setTitle("Przedmioty");
+        tabLayout = (TabLayout) findViewById(R.id.tabLayoutId);
+        viewPager = (ViewPager) findViewById(R.id.viewPagerId);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerSubjectsView);
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        subjectsList = new ArrayList<>();
+        adapter = new SubjectsListAdapter(subjectsList);
+        SubjectsListFragment fragment;
+        setSupportActionBar(toolbar);
+
+        Intent intent = getIntent();
+
+        int coursesId = intent.getIntExtra("coursesId", 0);
+        int facultiesId = intent.getIntExtra("facultiesId", 0);
+        int groupsId = intent.getIntExtra("groupsId", 0);
+
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new SubjectsListFragment().newInstance(getMondayPlanFromFirebase(facultiesId, coursesId)), "PN");
+        adapter.addFragment(new SubjectsListFragment().newInstance(getTuesdayPlanFromFirebase(facultiesId, coursesId, groupsId)), "WT");
+        adapter.addFragment(new SubjectsListFragment().newInstance(getWednesdayPlanFromFirebase(facultiesId, coursesId)), "SR");
+        adapter.addFragment(new SubjectsListFragment().newInstance(getThursdayPlanFromFirebase(facultiesId, coursesId, groupsId)), "CZ");
+        adapter.addFragment(new SubjectsListFragment().newInstance(getFridayPlanFromFirebase(facultiesId, coursesId, groupsId)), "PT");
+        adapter.addFragment(new SubjectsListFragment().newInstance(getSaturdayPlanFromFirebase(facultiesId, coursesId, groupsId)), "SB");
+        adapter.addFragment(new SubjectsListFragment().newInstance(getSundayPlanFromFirebase(facultiesId, coursesId, groupsId)), "ND");
+        adapter.addFragment(new SubjectsListFragment().newInstance(getSundayPlanFromFirebase(facultiesId, coursesId, groupsId)), "+");
+
+
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
     }
-    private void defineView(){
-        tabLayout=findViewById(R.id.tabLayoutId);
-        viewPager=findViewById(R.id.viewPagerId);
-    }
-    public void bindView(){
-        setupViewPager(viewPager);
-    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -60,31 +90,38 @@ public class SubjectsActivity extends AppCompatActivity {
     }
 
     private void setupViewPager(ViewPager viewPager){
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new ShowUserListFragment().newInstance(setUpUserList()), "PON");
-        adapter.addFragment(new ShowUserListFragment().newInstance(setUpChatListUsers()), "WTO");
-        adapter.addFragment(new ShowUserListFragment().newInstance(setUpOnlineUsers()), "SRO");
-        adapter.addFragment(new ShowUserListFragment().newInstance(setUpChatListUsers()), "CZW");
-        adapter.addFragment(new ShowUserListFragment().newInstance(setUpChatListUsers()), "PT");
-        adapter.addFragment(new ShowUserListFragment().newInstance(setUpUserList()), "SOB");
-        adapter.addFragment(new ShowUserListFragment().newInstance(setUpChatListUsers()), "ND");
 
 
-        viewPager.setAdapter(adapter);
-        tabLayout.setupWithViewPager(viewPager);
 
     }
 
-    private List<Subjects> setUpUserList(){
-        final List<Subjects> userList=new ArrayList<>();
-        FirebaseDatabase.getInstance().getReference().child("data").addValueEventListener(new ValueEventListener() {
+    public List<Subjects> getMondayPlanFromFirebase(Integer facultiesKey, Integer coursesKey){
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference().child("script-scraped/"+facultiesKey+"/courses/"+coursesKey+"/groups");
+
+        databaseReference.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot> iterator=  dataSnapshot.getChildren().iterator();
-                while (iterator.hasNext()){
-                    DataSnapshot snapshot=iterator.next();
-                    userList.add(snapshot.getValue(Subjects.class));
-                }
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                Subjects subjects = dataSnapshot.getValue(Subjects.class);
+                subjectsList.add(subjects);
+
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
             }
 
@@ -93,18 +130,141 @@ public class SubjectsActivity extends AppCompatActivity {
 
             }
         });
-        return userList;
+       return  subjectsList;
     }
-    private List<Subjects> setUpChatListUsers(){
-        List<Subjects> subjectsList=new ArrayList<>();
-        subjectsList.add(new Subjects("ram@gmail.com"));
+    public List<Subjects> getTuesdayPlanFromFirebase(Integer facultiesKey, Integer coursesKey, Integer groupsKey){
+        final List<Subjects> subjectsList=new ArrayList<>();
+        FirebaseDatabase.getInstance().getReference().child("script-scraped/"+facultiesKey+"/courses/"+coursesKey+"/groups").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> iterator=  dataSnapshot.getChildren().iterator();
+                while (iterator.hasNext()){
+                    DataSnapshot snapshot=iterator.next();
+                    subjectsList.add(snapshot.getValue(Subjects.class));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        return  subjectsList;
+    }
+    public List<Subjects> getWednesdayPlanFromFirebase(Integer facultiesKey, Integer coursesKey){
+        final List<Subjects> subjectsList=new ArrayList<>();
+
+        FirebaseDatabase.getInstance().getReference().child("script-scraped/"+facultiesKey+"/courses/"+coursesKey+"/groups").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> iterator=  dataSnapshot.getChildren().iterator();
+                while (iterator.hasNext()){
+                    DataSnapshot snapshot=iterator.next();
+                    subjectsList.add(snapshot.getValue(Subjects.class));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        //subjectsList.add(new Subjects("ram@gmail.com"));
         return subjectsList;
     }
-    private List<Subjects> setUpOnlineUsers(){
-        List<Subjects> userList=new ArrayList<>();
-        userList.add(new Subjects("ram@gmail.com"));
-        userList.add(new Subjects("hari@gmail.com"));
-        return userList;
+
+    public List<Subjects> getThursdayPlanFromFirebase(Integer facultiesKey, Integer coursesKey, Integer groupsKey){
+        final List<Subjects> subjectsList=new ArrayList<>();
+
+        FirebaseDatabase.getInstance().getReference().child("script-scraped/"+facultiesKey+"/courses/"+coursesKey+"/groups").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> iterator=  dataSnapshot.getChildren().iterator();
+                while (iterator.hasNext()){
+                    DataSnapshot snapshot=iterator.next();
+                    subjectsList.add(snapshot.getValue(Subjects.class));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        //subjectsList.add(new Subjects("ram@gmail.com"));
+        return subjectsList;
+    }
+
+    public List<Subjects> getFridayPlanFromFirebase(Integer facultiesKey, Integer coursesKey, Integer groupsKey){
+        final List<Subjects> subjectsList=new ArrayList<>();
+
+        FirebaseDatabase.getInstance().getReference().child("script-scraped/"+facultiesKey+"/courses/"+coursesKey+"/groups").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> iterator=  dataSnapshot.getChildren().iterator();
+                while (iterator.hasNext()){
+                    DataSnapshot snapshot=iterator.next();
+                    subjectsList.add(snapshot.getValue(Subjects.class));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        //subjectsList.add(new Subjects("ram@gmail.com"));
+        return subjectsList;
+    }
+
+    public List<Subjects> getSaturdayPlanFromFirebase(Integer facultiesKey, Integer coursesKey, Integer groupsKey){
+        final List<Subjects> subjectsList=new ArrayList<>();
+
+        FirebaseDatabase.getInstance().getReference().child("script-scraped/"+facultiesKey+"/courses/"+coursesKey+"/groups").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> iterator=  dataSnapshot.getChildren().iterator();
+                while (iterator.hasNext()){
+                    DataSnapshot snapshot=iterator.next();
+                    subjectsList.add(snapshot.getValue(Subjects.class));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        //subjectsList.add(new Subjects("ram@gmail.com"));
+        return subjectsList;
+    }
+
+    public List<Subjects> getSundayPlanFromFirebase(Integer facultiesKey, Integer coursesKey, Integer groupsKey){
+        final List<Subjects> subjectsList=new ArrayList<>();
+
+        FirebaseDatabase.getInstance().getReference().child("script-scraped/"+facultiesKey+"/courses/"+coursesKey+"/groups").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> iterator=  dataSnapshot.getChildren().iterator();
+                while (iterator.hasNext()){
+                    DataSnapshot snapshot=iterator.next();
+                    subjectsList.add(snapshot.getValue(Subjects.class));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        //subjectsList.add(new Subjects("ram@gmail.com"));
+        return subjectsList;
+    }
+
+
+    @Override
+    public void onSubjectsAdapterListener(Subjects subjects) {
+
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {

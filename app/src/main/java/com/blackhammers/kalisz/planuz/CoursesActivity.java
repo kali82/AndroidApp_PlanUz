@@ -44,6 +44,7 @@ public class CoursesActivity extends AppCompatActivity  implements  onCoursesAda
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar_id);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Kierunki");
         recyclerView = findViewById(R.id.RecyclerViewCoursesID);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -68,6 +69,7 @@ public class CoursesActivity extends AppCompatActivity  implements  onCoursesAda
         getMenuInflater().inflate(R.menu.search_courses, menu);
         MenuItem menuItem = menu.findItem(R.id.courses_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+        searchView.setQueryHint("Wyszukaj kierunek");
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String newText) {
@@ -96,7 +98,7 @@ public class CoursesActivity extends AppCompatActivity  implements  onCoursesAda
     }
 
     public void getCoursesFromDatabase(Integer key) {
-        databaseReference = firebaseDatabase.getReference().child("data/"+key+"/courses");
+        databaseReference = firebaseDatabase.getReference().child("script-scraped/"+key+"/courses");
         databaseReference.keepSynced(true);
 
         databaseReference.addChildEventListener(new ChildEventListener() {
