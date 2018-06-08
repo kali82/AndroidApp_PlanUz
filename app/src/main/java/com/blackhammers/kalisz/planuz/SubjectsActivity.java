@@ -50,21 +50,20 @@ public class SubjectsActivity extends AppCompatActivity implements onSubjectsAda
         SubjectsListFragment fragment;
         setSupportActionBar(toolbar);
 
-        Intent intent = getIntent();
 
-        int coursesId = intent.getIntExtra("coursesId", 0);
-        int facultiesId = intent.getIntExtra("facultiesId", 0);
-        int groupsId = intent.getIntExtra("groupsId", 0);
+        int coursesId = getIntent().getIntExtra("coursesId", 0);
+        int facultiesId = getIntent().getIntExtra("facultiesId", 0);
+        int groupsId = getIntent().getIntExtra("groupsId", 0);
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new SubjectsListFragment().newInstance(getMondayPlanFromFirebase(facultiesId, coursesId)), "PN");
+        adapter.addFragment(new SubjectsListFragment().newInstance(getMondayPlanFromFirebase(facultiesId, coursesId, groupsId)), "PN");
         adapter.addFragment(new SubjectsListFragment().newInstance(getTuesdayPlanFromFirebase(facultiesId, coursesId, groupsId)), "WT");
-        adapter.addFragment(new SubjectsListFragment().newInstance(getWednesdayPlanFromFirebase(facultiesId, coursesId)), "SR");
+        adapter.addFragment(new SubjectsListFragment().newInstance(getWednesdayPlanFromFirebase(facultiesId, coursesId, groupsId)), "SR");
         adapter.addFragment(new SubjectsListFragment().newInstance(getThursdayPlanFromFirebase(facultiesId, coursesId, groupsId)), "CZ");
         adapter.addFragment(new SubjectsListFragment().newInstance(getFridayPlanFromFirebase(facultiesId, coursesId, groupsId)), "PT");
         adapter.addFragment(new SubjectsListFragment().newInstance(getSaturdayPlanFromFirebase(facultiesId, coursesId, groupsId)), "SB");
         adapter.addFragment(new SubjectsListFragment().newInstance(getSundayPlanFromFirebase(facultiesId, coursesId, groupsId)), "ND");
-        adapter.addFragment(new SubjectsListFragment().newInstance(getSundayPlanFromFirebase(facultiesId, coursesId, groupsId)), "+");
+        adapter.addFragment(new SubjectsListFragment().newInstance(getIrregularPlanFromFirebase(facultiesId, coursesId, groupsId)), "+");
 
 
         viewPager.setAdapter(adapter);
@@ -74,7 +73,7 @@ public class SubjectsActivity extends AppCompatActivity implements onSubjectsAda
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.search_groups, menu);               // POPRAW !!!!
+        getMenuInflater().inflate(R.menu.fav_subject, menu);             
         return true;
     }
 
@@ -82,24 +81,30 @@ public class SubjectsActivity extends AppCompatActivity implements onSubjectsAda
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_search) {
+        if (id == R.id.my_subject) {
+
+            if(item.getIcon().getConstantState().equals(getResources().getDrawable(R.drawable.ic_gold_star).getConstantState())) {
+                item.setIcon(R.drawable.ic_fav_star);
+            }else {
+                item.setIcon(R.drawable.ic_gold_star);
+
+            }
+
+
             return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void setupViewPager(ViewPager viewPager){
 
+    public List<Subjects> getMondayPlanFromFirebase(Integer facultiesKey, Integer coursesKey, Integer groupsKey){
 
-
-    }
-
-    public List<Subjects> getMondayPlanFromFirebase(Integer facultiesKey, Integer coursesKey){
-
+        final List<Subjects> subjectsList=new ArrayList<>();
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference().child("data/"+facultiesKey+"/courses/"+coursesKey+"/groups");
-
+        databaseReference = firebaseDatabase.getReference().child("script-scraped/"+facultiesKey+"/courses/"+coursesKey+"/groups/"+groupsKey+"/schedule/monday");
+        databaseReference.keepSynced(true);
         databaseReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -134,14 +139,32 @@ public class SubjectsActivity extends AppCompatActivity implements onSubjectsAda
     }
     public List<Subjects> getTuesdayPlanFromFirebase(Integer facultiesKey, Integer coursesKey, Integer groupsKey){
         final List<Subjects> subjectsList=new ArrayList<>();
-        FirebaseDatabase.getInstance().getReference().child("data/"+facultiesKey+"/courses/"+coursesKey+"/groups").addValueEventListener(new ValueEventListener() {
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference().child("script-scraped/"+facultiesKey+"/courses/"+coursesKey+"/groups/"+groupsKey+"/schedule/tuesday");
+        databaseReference.keepSynced(true);
+        databaseReference.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot> iterator=  dataSnapshot.getChildren().iterator();
-                while (iterator.hasNext()){
-                    DataSnapshot snapshot=iterator.next();
-                    subjectsList.add(snapshot.getValue(Subjects.class));
-                }
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                Subjects subjects = dataSnapshot.getValue(Subjects.class);
+                subjectsList.add(subjects);
+
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
@@ -151,17 +174,34 @@ public class SubjectsActivity extends AppCompatActivity implements onSubjectsAda
         });
         return  subjectsList;
     }
-    public List<Subjects> getWednesdayPlanFromFirebase(Integer facultiesKey, Integer coursesKey){
+    public List<Subjects> getWednesdayPlanFromFirebase(Integer facultiesKey, Integer coursesKey, Integer groupsKey){
         final List<Subjects> subjectsList=new ArrayList<>();
-
-        FirebaseDatabase.getInstance().getReference().child("data/"+facultiesKey+"/courses/"+coursesKey+"/groups").addValueEventListener(new ValueEventListener() {
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference().child("script-scraped/"+facultiesKey+"/courses/"+coursesKey+"/groups/"+groupsKey+"/schedule/wednesday");
+        databaseReference.keepSynced(true);
+        databaseReference.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot> iterator=  dataSnapshot.getChildren().iterator();
-                while (iterator.hasNext()){
-                    DataSnapshot snapshot=iterator.next();
-                    subjectsList.add(snapshot.getValue(Subjects.class));
-                }
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                Subjects subjects = dataSnapshot.getValue(Subjects.class);
+                subjectsList.add(subjects);
+
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
@@ -169,21 +209,37 @@ public class SubjectsActivity extends AppCompatActivity implements onSubjectsAda
 
             }
         });
-        //subjectsList.add(new Subjects("ram@gmail.com"));
-        return subjectsList;
+        return  subjectsList;
     }
 
     public List<Subjects> getThursdayPlanFromFirebase(Integer facultiesKey, Integer coursesKey, Integer groupsKey){
         final List<Subjects> subjectsList=new ArrayList<>();
-
-        FirebaseDatabase.getInstance().getReference().child("data/"+facultiesKey+"/courses/"+coursesKey+"/groups").addValueEventListener(new ValueEventListener() {
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference().child("script-scraped/"+facultiesKey+"/courses/"+coursesKey+"/groups/"+groupsKey+"/schedule/thursday");
+        databaseReference.keepSynced(true);
+        databaseReference.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot> iterator=  dataSnapshot.getChildren().iterator();
-                while (iterator.hasNext()){
-                    DataSnapshot snapshot=iterator.next();
-                    subjectsList.add(snapshot.getValue(Subjects.class));
-                }
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                Subjects subjects = dataSnapshot.getValue(Subjects.class);
+                subjectsList.add(subjects);
+
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
@@ -191,21 +247,37 @@ public class SubjectsActivity extends AppCompatActivity implements onSubjectsAda
 
             }
         });
-        //subjectsList.add(new Subjects("ram@gmail.com"));
-        return subjectsList;
+        return  subjectsList;
     }
 
     public List<Subjects> getFridayPlanFromFirebase(Integer facultiesKey, Integer coursesKey, Integer groupsKey){
         final List<Subjects> subjectsList=new ArrayList<>();
-
-        FirebaseDatabase.getInstance().getReference().child("data/"+facultiesKey+"/courses/"+coursesKey+"/groups").addValueEventListener(new ValueEventListener() {
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference().child("script-scraped/"+facultiesKey+"/courses/"+coursesKey+"/groups/"+groupsKey+"/schedule/friday");
+        databaseReference.keepSynced(true);
+        databaseReference.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot> iterator=  dataSnapshot.getChildren().iterator();
-                while (iterator.hasNext()){
-                    DataSnapshot snapshot=iterator.next();
-                    subjectsList.add(snapshot.getValue(Subjects.class));
-                }
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                Subjects subjects = dataSnapshot.getValue(Subjects.class);
+                subjectsList.add(subjects);
+
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
@@ -213,21 +285,37 @@ public class SubjectsActivity extends AppCompatActivity implements onSubjectsAda
 
             }
         });
-        //subjectsList.add(new Subjects("ram@gmail.com"));
-        return subjectsList;
+        return  subjectsList;
     }
 
     public List<Subjects> getSaturdayPlanFromFirebase(Integer facultiesKey, Integer coursesKey, Integer groupsKey){
         final List<Subjects> subjectsList=new ArrayList<>();
-
-        FirebaseDatabase.getInstance().getReference().child("data/"+facultiesKey+"/courses/"+coursesKey+"/groups").addValueEventListener(new ValueEventListener() {
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference().child("script-scraped/"+facultiesKey+"/courses/"+coursesKey+"/groups/"+groupsKey+"/schedule/saturday");
+        databaseReference.keepSynced(true);
+        databaseReference.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot> iterator=  dataSnapshot.getChildren().iterator();
-                while (iterator.hasNext()){
-                    DataSnapshot snapshot=iterator.next();
-                    subjectsList.add(snapshot.getValue(Subjects.class));
-                }
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                Subjects subjects = dataSnapshot.getValue(Subjects.class);
+                subjectsList.add(subjects);
+
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
@@ -235,21 +323,37 @@ public class SubjectsActivity extends AppCompatActivity implements onSubjectsAda
 
             }
         });
-        //subjectsList.add(new Subjects("ram@gmail.com"));
-        return subjectsList;
+        return  subjectsList;
     }
 
     public List<Subjects> getSundayPlanFromFirebase(Integer facultiesKey, Integer coursesKey, Integer groupsKey){
         final List<Subjects> subjectsList=new ArrayList<>();
-
-        FirebaseDatabase.getInstance().getReference().child("data/"+facultiesKey+"/courses/"+coursesKey+"/groups").addValueEventListener(new ValueEventListener() {
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference().child("script-scraped/"+facultiesKey+"/courses/"+coursesKey+"/groups/"+groupsKey+"/schedule/sunday");
+        databaseReference.keepSynced(true);
+        databaseReference.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot> iterator=  dataSnapshot.getChildren().iterator();
-                while (iterator.hasNext()){
-                    DataSnapshot snapshot=iterator.next();
-                    subjectsList.add(snapshot.getValue(Subjects.class));
-                }
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                Subjects subjects = dataSnapshot.getValue(Subjects.class);
+                subjectsList.add(subjects);
+
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
             }
 
             @Override
@@ -257,8 +361,46 @@ public class SubjectsActivity extends AppCompatActivity implements onSubjectsAda
 
             }
         });
-        //subjectsList.add(new Subjects("ram@gmail.com"));
-        return subjectsList;
+        return  subjectsList;
+    }
+
+
+    public List<Subjects> getIrregularPlanFromFirebase(Integer facultiesKey, Integer coursesKey, Integer groupsKey){
+        final List<Subjects> subjectsList=new ArrayList<>();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference().child("script-scraped/"+facultiesKey+"/courses/"+coursesKey+"/groups/"+groupsKey+"/schedule/irregular");
+        databaseReference.keepSynced(true);
+        databaseReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                Subjects subjects = dataSnapshot.getValue(Subjects.class);
+                subjectsList.add(subjects);
+
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        return  subjectsList;
     }
 
 

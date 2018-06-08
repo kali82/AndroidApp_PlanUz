@@ -2,6 +2,9 @@ package com.blackhammers.kalisz.planuz;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -82,7 +86,17 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
         getMenuInflater().inflate(R.menu.search_faculties, menu);
         MenuItem menuItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
-        searchView.setQueryHint("Wyszukaj wydziału");
+//        searchView.setIconified(false);
+//        searchView.setIconifiedByDefault(false);
+        SearchView.SearchAutoComplete searchAutoComplete = (SearchView.SearchAutoComplete)searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        //searchAutoComplete.setHintTextColor(Color.WHITE);
+        searchAutoComplete.setTextColor(Color.WHITE);
+        ImageView searchIcon = (ImageView)searchView.findViewById(android.support.v7.appcompat.R.id.search_mag_icon);
+        ImageView searchIcon2 = (ImageView)searchView.findViewById(android.support.v7.appcompat.R.id.search_button);
+        searchIcon.setImageResource(R.drawable.ic_action_action_search);
+        searchIcon2.setImageResource(R.drawable.ic_action_action_search);
+        searchView.setQueryHint("Wyszukaj wydział");
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String newText) {
@@ -128,7 +142,7 @@ public class FacultiesActivity extends AppCompatActivity implements onFacultiesA
     public void getFacultiesFromDatabase() {
 
 
-        databaseReference = firebaseDatabase.getReference().child("data");
+        databaseReference = firebaseDatabase.getReference().child("script-scraped");
         databaseReference.keepSynced(true);
 
         databaseReference.addChildEventListener(new ChildEventListener() {

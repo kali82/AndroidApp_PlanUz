@@ -112,7 +112,7 @@ public class GroupsActivity extends AppCompatActivity implements onGroupsAdapter
     }
 
     public void getGroupsFromDatabase(Integer facultiesKey, Integer coursesKey){
-        databaseReference = firebaseDatabase.getReference().child("data/"+facultiesKey+"/courses/"+coursesKey+"/groups");
+        databaseReference = firebaseDatabase.getReference().child("script-scraped/"+facultiesKey+"/courses/"+coursesKey+"/groups");
         databaseReference.keepSynced(true);
 
         databaseReference.addChildEventListener(new ChildEventListener() {
@@ -200,16 +200,11 @@ public class GroupsActivity extends AppCompatActivity implements onGroupsAdapter
     @Override
     public void onGroupsSelectedListener(Groups groups) {
         Intent intent = new Intent(getApplicationContext(), SubjectsActivity.class);
-        int coursesId = intent.getIntExtra("coursesId", 0);
-        int facultiesId = intent.getIntExtra("facultiesId", 0);
+        int coursesId = getIntent().getIntExtra("coursesId", 0);
+        int facultiesId = getIntent().getIntExtra("facultiesId", 0);
         intent.putExtra("facultiesId", facultiesId );
         intent.putExtra("coursesId", coursesId);
         intent.putExtra("groupsId", groups.getId());
-//        Bundle bundle = new Bundle();
-//        bundle.putInt("facultiesId", facultiesId);
-//        bundle.putInt("coursesId", coursesId);
-//        bundle.putInt("groupsId", groups.getId());
-//        intent.putExtras(bundle);
         startActivity(intent);
     }
 }

@@ -29,6 +29,7 @@ public class SubjectsListFragment extends Fragment {
     private List<Subjects> subjectsList;
 
 
+
    //private onSubjectsAdapterListener mListener;
 
     public SubjectsListFragment() {
@@ -38,9 +39,6 @@ public class SubjectsListFragment extends Fragment {
         SubjectsListFragment fragment = new SubjectsListFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_PARAM_SUBJECTS_LIST, (Serializable) subjectsList);
-
-
-
         fragment.setArguments(args);
         return fragment;
     }
