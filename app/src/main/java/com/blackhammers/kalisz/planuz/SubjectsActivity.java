@@ -1,6 +1,9 @@
 package com.blackhammers.kalisz.planuz;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -33,6 +36,9 @@ public class SubjectsActivity extends AppCompatActivity implements onSubjectsAda
     List<Subjects> subjectsList;
     SubjectsListAdapter adapter;
     RecyclerView recyclerView;
+    private  Menu menu;
+    private MenuItem menuItem;
+    boolean isFavClicked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +52,12 @@ public class SubjectsActivity extends AppCompatActivity implements onSubjectsAda
         recyclerView = (RecyclerView) findViewById(R.id.recyclerSubjectsView);
         firebaseDatabase = FirebaseDatabase.getInstance();
         subjectsList = new ArrayList<>();
+        menuItem = findViewById(R.id.my_subject);
         adapter = new SubjectsListAdapter(subjectsList);
         SubjectsListFragment fragment;
         setSupportActionBar(toolbar);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        isFavClicked = sharedPreferences.getBoolean("menu_item", false);
 
 
         int coursesId = getIntent().getIntExtra("coursesId", 0);
@@ -73,30 +82,77 @@ public class SubjectsActivity extends AppCompatActivity implements onSubjectsAda
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.fav_subject, menu);             
+        getMenuInflater().inflate(R.menu.fav_subject, menu);
+       // menu.getItem(0).setIcon(menuItem.getIcon());
+        this.menu = menu;
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
 
-        if (id == R.id.my_subject) {
-
-            if(item.getIcon().getConstantState().equals(getResources().getDrawable(R.drawable.ic_gold_star).getConstantState())) {
-                item.setIcon(R.drawable.ic_fav_star);
-            }else {
-                item.setIcon(R.drawable.ic_gold_star);
-
-            }
+        final SharedPreferences myPrefs = getPreferences(Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = myPrefs.edit();
+        isFavClicked = myPrefs.getBoolean("menu_item", false);
 
 
-            return true;
+        switch (item.getItemId()) {
+            case R.id.my_subject:
+                isFavClicked=true;
+                editor.putBoolean("menu_item", isFavClicked);
+                editor.commit();
+                invalidateOptionsMenu();
+                return true;
+
+            case R.id.my_subject2:
+
+                isFavClicked=false;
+                editor.putBoolean("menu_item", isFavClicked);
+                editor.commit();
+                invalidateOptionsMenu();
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+//        int id = item.getItemId();
+//
+//        if (id == R.id.my_subject) {
+//
+//            if (item.getIcon().getConstantState().equals(getResources().getDrawable(R.drawable.ic_gold_star).getConstantState())) {
+//                item.setIcon(R.drawable.ic_fav_star);
+//                this.menuItem = item;
+//            } else {
+//                item.setIcon(R.drawable.ic_gold_star);
+//                this.menuItem = item;
+//
+//            }
+//
+//
+//            return true;
+//        }
+//
+//
+//
+//        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if(isFavClicked==true){
+            menu.findItem(R.id.my_subject).setVisible(false);
+            menu.findItem(R.id.my_subject2).setVisible(true);
+
+        }else{
+            menu.findItem(R.id.my_subject).setVisible(true);
+            menu.findItem(R.id.my_subject2).setVisible(false);
+
         }
 
 
-        return super.onOptionsItemSelected(item);
+
+        return super.onPrepareOptionsMenu(menu);
     }
+
+
 
 
     public List<Subjects> getMondayPlanFromFirebase(Integer facultiesKey, Integer coursesKey, Integer groupsKey){

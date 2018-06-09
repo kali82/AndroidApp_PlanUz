@@ -15,7 +15,6 @@ public class MainMenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         groupsPlan = (CardView) findViewById(R.id.groupsPlanId);
         lecturerRooms = (CardView) findViewById(R.id.lecturerRoomsId);

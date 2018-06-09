@@ -8,5 +8,12 @@
         android:icon="@drawable/ic_fav_star"
         app:showAsAction="always"
         android:title="courses_Search" />
+    <item
+        android:id="@+id/my_subject2"
+        android:icon="@drawable/ic_gold_star"
+        app:showAsAction="always"
+        android:visible="false"
+        android:title="courses_Search" />
+
 
 </menu>
